@@ -1,26 +1,13 @@
 import PyPDF2
 import re
 
-# open the pdf file
-# myfile = open('ogloszenie_12215.pdf', mode='rb')
-pdf_reader = PyPDF2.PdfFileReader('ogloszenie_12215.pdf')
-# myfile.close()
-# get number of pages
-NumPages = pdf_reader.getNumPages()
+from pdfminer import high_level
 
-# define keyterms
-String = "Niezależna praca od Systemu CAD (brak konieczności instalacji sytemu CAD jako bazy dla CAM)"
+local_pdf_filename = "ogloszenie_12215.pdf"
+pages = [7] # just the first page
 
-page = pdf_reader.getPage(8)
-extracted_page = page.extractText()
-ResSearch = re.search(String, extracted_page)
-print(ResSearch)
+extracted_text = high_level.extract_text(local_pdf_filename, "", pages)
+extracted_text_low = extracted_text.lower()
+extracted_text_clean = re.sub('[^\s\d\w]', '', extracted_text.lower()) #czyszczenie Sringa
+print(extracted_text_clean)
 
-# extract text and do the search
-# for i in range(0, NumPages):
-#     PageObj = pdf_reader.getPage(i)
-#     print("this is page " + str(i))
-#     Text = PageObj.extractText()
-#     # print(Text)
-#     ResSearch = re.search(String, Text)
-#     print(ResSearch)
