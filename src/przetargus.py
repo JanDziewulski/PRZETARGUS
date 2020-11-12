@@ -42,7 +42,7 @@ class PDFsearcher:
     def pdf_info(self, file):
         mail = re.search(r'(\w+([@])\w+.\w+)|(\w+.\w+([@])\w+.\w+)', file)
         nip = re.search(r'NIP(\W+\d{10})|NIP(\W+PL\d{10})|NIP(\W+PL\d{3}-\d{2,3}-\d{2}-\d{2,3})|NIP(\W+\d{3}-\d{2,3}-\d{2}-\d{2,3})', file)
-        return mail.group(), nip.group()
+        return f'e-mail: {mail.group()}\n{nip.group()}'
 
 
     def text_recon(self, text, text_to_recognize):
