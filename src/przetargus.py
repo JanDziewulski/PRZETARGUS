@@ -1,5 +1,5 @@
 # Pckg install
-import PyPDF2
+
 import re
 from pdfminer import high_level
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -18,12 +18,10 @@ from openpyxl import load_workbook
 # find_email_from_pdf = r'(\w+([@])\w+.\w+)|(\w+.\w+([@])\w+.\w+)'
 #find_nip_fpdf = r'NIP(\W+\d{10})|NIP(\W+PL\d{10})|NIP(\W+PL\d{3}-\d{2,3}-\d{2}-\d{2,3})|NIP(\W+\d{3}-\d{2,3}-\d{2}-\d{2,3})'
 
-def pdf_info():
-
-    fp = open('ogloszenie_12215.pdf', 'rb')
+def pdf_info(file):
+    fp = open(file, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser)
-
     print(doc.info)  # The "Info" metadata
 
 def pfd_read(file):
@@ -142,7 +140,6 @@ if __name__ == '__main__':
     # imput_data= pfd_read('ogloszenie_12215.pdf')
 
     imput_data= pfd_read('ogloszenie_12215.pdf')
-    pdf_info()
     # text_recon(imput_data)
     # print(imput_data)
     # text_from_excel()
