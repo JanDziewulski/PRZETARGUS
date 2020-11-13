@@ -1,5 +1,6 @@
 # Pckg install
-
+from RegonAPI import RegonAPI
+from RegonAPI.exceptions import ApiAuthenticationError
 import re
 from pdfminer import high_level
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -38,11 +39,43 @@ class PDFsearcher:
             page_no += 1
         return data
 
+    def niptofront(self, nip):
+        # Available reports
+        REPORTS = ["BIR11OsFizycznaDaneOgolne"]
+        c_nip = re.sub(r'[^\d]', '', nip)
+        # TEST_API_KEY = 'b7cbd57bd28f4f4c99fe' - klucz produkcyjny
+        TEST_API_KEY = "abcde12345abcde12345"
+        CD_PROJEKT_NIP = f'{c_nip}'
+
+        # Authentication
+        api = RegonAPI(bir_version="bir1.1", is_production=False)
+        try:
+            api.authenticate(key=TEST_API_KEY)
+        except ApiAuthenticationError as e:
+            print("[-]", e)
+            exit(0)
+        except Exception as e:
+            raise
+
+        # Search by NIP
+        result = api.searchData(nip=CD_PROJEKT_NIP)
+
+        ulica = result[0].get('Ulica')
+        numer = result[0].get('NrNieruchomosci')
+        miejscowosc = result[0].get('Miejscowosc')
+        kod = result[0].get('KodPocztowy')
+        nazwa = result[0].get('Nazwa')
+        adres = f'{ulica} {numer}\n {miejscowosc} {kod}'
+        return adres, nazwa
+
 #wyszukiwanie danych do okna dialogowego
-    def pdf_info(self, file):
-        mail = re.search(r'(\w+([@])\w+.\w+)|(\w+.\w+([@])\w+.\w+)', file)
+    def pdf_nip_info(self, file):
         nip = re.search(r'NIP(\W+\d{10})|NIP(\W+PL\d{10})|NIP(\W+PL\d{3}-\d{2,3}-\d{2}-\d{2,3})|NIP(\W+\d{3}-\d{2,3}-\d{2}-\d{2,3})', file)
-        return f'e-mail: {mail.group()}\n{nip.group()}'
+        return nip.group()
+
+    def pdf_mail_info(self, file):
+        mail = re.search(r'(\w+([@])\w+.\w+)|(\w+.\w+([@])\w+.\w+)', file)
+        return mail.group()
 
 
     def text_recon(self, text, text_to_recognize):
@@ -119,7 +152,7 @@ class PDFsearcher:
             apn_list.append(value)
             # print(value)
             # text_recon(value)
-        return apn_list
+        return apn_list, iter_num
         # print(apn_list[1][0])
 
 
@@ -128,7 +161,7 @@ class PDFsearcher:
 # text_recon()
 if __name__ == '__main__':
     # imput_data= pfd_read('ogloszenie_12215.pdf')
-    c = Przetargus()
+    c = PDFsearcher()
 
     imput_data= c.pdf_read('ogloszenie_12215.pdf')
     # text_recon(imput_data)
@@ -146,29 +179,3 @@ if __name__ == '__main__':
             print('Nie rozpoznano!')
     print(mode(program_list))
 
-
-
-
-# def defineAList():
-#     local_list = ['1','2','3']
-#     print "For checking purposes: in defineAList, list is", local_list
-#     return local_list
-#
-# def useTheList(passed_list):
-#     print "For checking purposes: in useTheList, list is", passed_list
-#
-# def main():
-#     # returned list is ignored
-#     returned_list = defineAList()
-#
-#     # passed_list inside useTheList is set to what is returned from defineAList
-#     useTheList(returned_list)
-
-# main()
-
-# print(item_counter(s))
-
-
-# print(text_to_list)
-
-# li = list(string.split(" "))
