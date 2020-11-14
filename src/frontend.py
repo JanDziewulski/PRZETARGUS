@@ -5,6 +5,7 @@ import time
 from przetargus import PDFsearcher
 from tkinter import scrolledtext
 from statistics import mode
+from tkinter import Menu
 n_object = PDFsearcher()
 
 #Popup with errors
@@ -96,6 +97,19 @@ def start():
     my_progress['value'] = 100
 
 window = Tk()
+
+menu_bar = Menu(window)
+window.config(menu=menu_bar)
+# Create menu and add menu items
+file_menu = Menu(menu_bar,tearoff=0) # create File menu
+file_menu.add_command(label="New") # add File menu item
+menu_bar.add_cascade(label="Program", menu=file_menu) # add File menu to menu bar and give it a label
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=exit)
+help_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Pomoc", menu=help_menu)
+help_menu.add_command(label="O programie")
+
 window.resizable(False, False)  # This code helps to disable windows from resizing
 window_height = 640
 window_width = 480
