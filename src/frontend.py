@@ -42,8 +42,11 @@ def browseFiles():
 def clear():
     t1.configure(state='normal')
     t1.delete("1.0","end")
+    t2.configure(state='normal')    
     t2.delete("1.0","end")
-
+    e1.configure(state='normal')
+    e1.delete("1.0","end")
+    
 
 def set_text(text):
     t1.configure(state='normal')
@@ -63,7 +66,11 @@ def start():
     my_progress['value'] = 20
     # global text_info
     try:
-        text = n_object.pdf_read(filename) # pobieranie warości z nazwy pliku
+        if len(e1.get()) == 0:
+            text = n_object.pdf_read(filename) # pobieranie warości z nazwy pliku
+        else:
+            text = n_object.html_to_text(e1.get())
+            e1.configure(bg='lavender')   
         my_progress['value'] = 40
         text_info = n_object.pdf_mail_info(text) #pobieranie wartości pdf info z pliku
         text_info_nip = n_object.pdf_nip_info(text)
@@ -84,7 +91,7 @@ def start():
             val = n_object.text_recon(text, excel_list[i][0])
             if val is True:
                 program_list.append(excel_list[i][1])
-                my_progress['value'] = 90
+                # my_progress['value'] = 90
                 print(excel_list[i][1:])
             else:
                 print('Nie rozpoznano!')
@@ -98,17 +105,17 @@ def start():
 
 window = Tk()
 
-menu_bar = Menu(window)
-window.config(menu=menu_bar)
-# Create menu and add menu items
-file_menu = Menu(menu_bar,tearoff=0) # create File menu
-file_menu.add_command(label="New") # add File menu item
-menu_bar.add_cascade(label="Program", menu=file_menu) # add File menu to menu bar and give it a label
-file_menu.add_separator()
-file_menu.add_command(label="Exit", command=exit)
-help_menu = Menu(menu_bar, tearoff=0)
-menu_bar.add_cascade(label="Pomoc", menu=help_menu)
-help_menu.add_command(label="O programie")
+# menu_bar = Menu(window)
+# window.config(menu=menu_bar)
+# # Create menu and add menu items
+# file_menu = Menu(menu_bar,tearoff=0) # create File menu
+# file_menu.add_command(label="New") # add File menu item
+# menu_bar.add_cascade(label="Program", menu=file_menu) # add File menu to menu bar and give it a label
+# file_menu.add_separator()
+# file_menu.add_command(label="Exit", command=exit)
+# help_menu = Menu(menu_bar, tearoff=0)
+# menu_bar.add_cascade(label="Pomoc", menu=help_menu)
+# help_menu.add_command(label="O programie")
 
 window.resizable(False, False)  # This code helps to disable windows from resizing
 window_height = 640
@@ -144,6 +151,7 @@ e1=Entry(window,text='Podaj link', textvariable=http_link,
           bg="white", width=47)
 # e1.place(height=40, width=100)
 e1.place(x=150, y =105)
+
 
 button_explore = Button(window,
                         text = "Wybierz plik",

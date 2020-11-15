@@ -16,8 +16,45 @@ from openpyxl import load_workbook
 # import frontend as fr
 import statistics
 from statistics import mode
+import urllib
+import requests
+from bs4 import BeautifulSoup
+
+
 
 class PDFsearcher:
+
+    def html_to_text(self, link):
+        url = f'{link}'
+        res = requests.get(url)
+        html_page = res.content
+        soup = BeautifulSoup(html_page, 'html.parser')
+        text = soup.find_all(text=True)
+
+        output = ''
+        blacklist = [
+            '[document]',
+            'noscript',
+            'header',
+            'html',
+            'meta',
+            'head',
+            'input',
+            'script',
+            # there may be more elements you don't want, such as "style", etc.
+        ]
+
+        for t in text:
+            if t.parent.name not in blacklist:
+                output += '{} '.format(t)
+
+        return output
+
+    def text_from_html(self, link):
+        file = urllib.request.urlopen(link)
+        for line in file:
+            decoded_line = line.decode('utf-8')
+            print(decoded_line)
 
     def pdf_read(self, file):
         # pdf_data = fr.browseFiles()
@@ -43,12 +80,12 @@ class PDFsearcher:
         # Available reports
         REPORTS = ["BIR11OsFizycznaDaneOgolne"]
         c_nip = re.sub(r'[^\d]', '', nip)
-        # TEST_API_KEY = 'b7cbd57bd28f4f4c99fe' - klucz produkcyjny
-        TEST_API_KEY = "abcde12345abcde12345"
+        TEST_API_KEY = 'b7cbd57bd28f4f4c99fe' #- klucz produkcyjny
+        # TEST_API_KEY = "abcde12345abcde12345"
         CD_PROJEKT_NIP = f'{c_nip}'
 
         # Authentication
-        api = RegonAPI(bir_version="bir1.1", is_production=False)
+        api = RegonAPI(bir_version="bir1.1", is_production=True)
         try:
             api.authenticate(key=TEST_API_KEY)
         except ApiAuthenticationError as e:
